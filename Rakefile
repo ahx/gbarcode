@@ -17,7 +17,7 @@ HOMEPATH = "http://#{RUBYFORGE_PROJECT}.rubyforge.org"
 REV = nil # UNCOMMENT IF REQUIRED: File.read(".svn/entries")[/committed-rev="(d+)"/, 1] rescue nil
 GEM_VERSION = "0.98"
 # RDOC_OPTS = ["--diagram"]
-RDOC_OPTS = []
+RDOC_OPTS = ["--exclude", "\.c$"]
 
 gem_spec = Gem::Specification.new do |s|
   s.name = GEM_NAME
@@ -33,7 +33,7 @@ gem_spec = Gem::Specification.new do |s|
   s.autorequire = ['gbarcode']
   s.bindir = "bin"
   #s.default_executable = ""
-  # s.add_dependency("rmagick",">0.0.0")
+  # s.add_dependency("rmagick",">=1.15.4")
   #s.add_dependency("", "")
   s.extensions << "ext/extconf.rb"
   s.extra_rdoc_files = ["README.txt"]
@@ -50,14 +50,15 @@ Rake::GemPackageTask.new(gem_spec) do |pkg|
   rm_f FileList['pkg/**/*.*']
 end
 
-desc "Run test code"
+# desc "Run test code"
+
 Rake::TestTask.new(:default) do |t|
   t.libs << "test"
   t.pattern = 'test/**/*_test.rb'
   t.verbose = true
 end
 
-desc "Create documentation"
+# desc "Create documentation"
 Rake::RDocTask.new() do |rd|
   rd.main = "README.txt"
   rd.rdoc_files.include("./*.txt", "lib/**/*.rb")

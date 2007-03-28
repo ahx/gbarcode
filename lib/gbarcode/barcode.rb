@@ -57,7 +57,7 @@ module Gbarcode
         const = BARCODE_ISBN
       when "CODE93" || "CODE 93" 
         const = BARCODE_93
-      when "CODE 128B" || CODE128B
+      when "CODE 128B" || "CODE128B"
         const = BARCODE_128B
       when "CODE 128C" || "CODE128C"
         const = BARCODE_128C
