@@ -12,10 +12,35 @@ module Gbarcode
   class EncodingException < Exception
   end
 
+  ENCODINGS = 
+  {"CODE 39" => BARCODE_NO_CHECKSUM | BARCODE_39,
+    "CODE39" => BARCODE_NO_CHECKSUM | BARCODE_39,
+    "CODE128" => BARCODE_128,
+    "CODE 128" => BARCODE_128,
+    "I25"=> BARCODE_I25,
+    "INTERLEAVED 2 OF 5"=> BARCODE_I25,
+    "INTRLV25"=> BARCODE_I25,
+    "INTRLV 25" => BARCODE_I25,
+    "CODABAR"=> BARCODE_CBR,
+    "CBR" => BARCODE_CBR,
+    "MSI" => BARCODE_MSI,
+    "PLESSEY" => BARCODE_PLS,
+    "PLS" => BARCODE_PLS,
+    "EAN" => BARCODE_EAN,
+    "UPC" => BARCODE_UPC,
+    "ISBN" => BARCODE_ISBN,
+    "CODE93" => BARCODE_93,
+    "CODE 93" => BARCODE_93,
+    "CODE 128B" => BARCODE_128B,
+    "CODE128B" => BARCODE_128B,
+    "CODE 128C" => BARCODE_128C,
+    "CODE128C"=> BARCODE_128C
+  }
+
   # The Main barcoding class, instatiate this with a text string and optional encoding scheme. See link:README.txt for more information
   class Barcode
     include Gbarcode
-    
+
     # A class method for encoding a string into a barcode and writing the result out to the given filename. 
     # Default encoding = Code 39. The format of the output is taken from the filename's extension. Please note that 
     # RMagick does not do a good job of converting EPS to SVG images. If you want SVG images, use the instance method
@@ -36,35 +61,11 @@ module Gbarcode
 
     #:nodoc:
     def enc_to_const enc
-      case enc.upcase
-      when  "CODE 39" || "CODE39"
-        const =  BARCODE_NO_CHECKSUM | BARCODE_39
-      when "CODE128" || "CODE 128"
-        const = BARCODE_128
-      when "I25" || "INTERLEAVED 2 OF 5" || "INTRLV25" || "INTRLV 25" 
-        const = BARCODE_I25
-      when "CODABAR" || "CBR"
-        const = BARCODE_CBR
-      when "MSI"
-        const = BARCODE_MSI
-      when "PLESSEY" || "PLS" 
-        const = BARCODE_PLS
-      when "EAN" 
-        const = BARCODE_EAN
-      when "UPC" 
-        const = BARCODE_UPC
-      when "ISBN" 
-        const = BARCODE_ISBN
-      when "CODE93" || "CODE 93" 
-        const = BARCODE_93
-      when "CODE 128B" || "CODE128B"
-        const = BARCODE_128B
-      when "CODE 128C" || "CODE128C"
-        const = BARCODE_128C
+      if ENCODINGS.has_key? enc.upcase
+        return ENCODINGS[enc.upcase]
       else
-        const =  BARCODE_NO_CHECKSUM | BARCODE_39
+        return  ENCODINGS["CODE39"]
       end
-      return const
     end
     #:nodoc:
     def create_image
@@ -112,7 +113,7 @@ module Gbarcode
     def width= w
       @bc.width = w
     end
-    
+
     # Get the height of the barcode image, if set (in points: 1/72 of an inch) 
     def height
       @bc.height
@@ -130,7 +131,7 @@ module Gbarcode
     def partial
       @bc.partial
     end
-    
+
     def to_s
       return "#{self.class}: (#{@bc.encoding}) #{@bc.ascii}"
     end

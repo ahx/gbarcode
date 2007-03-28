@@ -44,23 +44,35 @@ gem_spec = Gem::Specification.new do |s|
   s.rubyforge_project = "gbarcode"
 end
 
+desc "package the gem"
 Rake::GemPackageTask.new(gem_spec) do |pkg|
   pkg.need_zip = true
   pkg.need_tar = true
-  rm_f FileList['pkg/**/*.*']
+  # rm_f FileList['pkg/**/*.*']
 end
 
-# desc "Run test code"
 
-Rake::TestTask.new(:default) do |t|
-  t.libs << "test"
+
+desc "Run test code"
+Rake::TestTask.new(:test) do |t|
+  t.libs << ["ext", "lib", "test"]
   t.pattern = 'test/**/*_test.rb'
   t.verbose = true
 end
 
-# desc "Create documentation"
-Rake::RDocTask.new() do |rd|
+desc "Create documentation"
+Rake::RDocTask.new(:docs) do |rd|
   rd.main = "README.txt"
   rd.rdoc_files.include("./*.txt", "lib/**/*.rb")
   rd.options =  RDOC_OPTS
+end
+
+desc "Makes the Makefile"
+task :extconf do 
+  system 'cd ext/; ruby extconf.rb'
+end
+
+desc "Compiles extensions"
+task :compile => [:extconf] do 
+  system 'cd ext/; make'
 end
