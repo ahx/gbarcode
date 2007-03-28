@@ -33,7 +33,7 @@ gem_spec = Gem::Specification.new do |s|
   s.autorequire = ['gbarcode']
   s.bindir = "bin"
   #s.default_executable = ""
-  # s.add_dependency("rmagick",">=1.15.4")
+  s.add_dependency("rmagick",">=1.15.4")
   #s.add_dependency("", "")
   s.extensions << "ext/extconf.rb"
   s.extra_rdoc_files = ["README.txt"]
