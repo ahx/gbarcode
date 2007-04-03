@@ -1534,10 +1534,10 @@ static swig_module_info swig_module = {swig_types, 3, 0, 0, 0, 0};
 
 /* -------- TYPES TABLE (END) -------- */
 
-#define SWIG_init    Init_cgbc
-#define SWIG_name    "Cgbc"
+#define SWIG_init    Init_gbarcode
+#define SWIG_name    "Gbarcode"
 
-static VALUE mCgbc;
+static VALUE mGbarcode;
 
 #define SWIGVERSION 0x010331 
 #define SWIG_VERSION SWIGVERSION
@@ -3051,11 +3051,11 @@ SWIG_PropagateClientData(void) {
 #ifdef __cplusplus
 extern "C"
 #endif
-SWIGEXPORT void Init_cgbc(void) {
+SWIGEXPORT void Init_gbarcode(void) {
   size_t i;
   
   SWIG_InitRuntime();
-  mCgbc = rb_define_module("Cgbc");
+  mGbarcode = rb_define_module("Gbarcode");
   
   SWIG_InitializeModule(0);
   for (i = 0; i < swig_module.size; i++) {
@@ -3063,13 +3063,13 @@ SWIGEXPORT void Init_cgbc(void) {
   }
   
   SWIG_RubyInitializeTrackings();
-  rb_define_module_function(mCgbc, "barcode_print", _wrap_barcode_print, -1);
-  rb_define_module_function(mCgbc, "barcode_encode_and_print", _wrap_barcode_encode_and_print, -1);
-  rb_define_module_function(mCgbc, "barcode_svg_print", _wrap_barcode_svg_print, -1);
-  rb_define_const(mCgbc, "BARCODE_VERSION", SWIG_FromCharPtr("0.98"));
-  rb_define_const(mCgbc, "BARCODE_VERSION_INT", SWIG_From_int((int)(9800)));
+  rb_define_module_function(mGbarcode, "barcode_print", _wrap_barcode_print, -1);
+  rb_define_module_function(mGbarcode, "barcode_encode_and_print", _wrap_barcode_encode_and_print, -1);
+  rb_define_module_function(mGbarcode, "barcode_svg_print", _wrap_barcode_svg_print, -1);
+  rb_define_const(mGbarcode, "BARCODE_VERSION", SWIG_FromCharPtr("0.98"));
+  rb_define_const(mGbarcode, "BARCODE_VERSION_INT", SWIG_From_int((int)(9800)));
   
-  cBarcodeItem.klass = rb_define_class_under(mCgbc, "BarcodeItem", rb_cObject);
+  cBarcodeItem.klass = rb_define_class_under(mGbarcode, "BarcodeItem", rb_cObject);
   SWIG_TypeClientData(SWIGTYPE_p_Barcode_Item, (void *) &cBarcodeItem);
   rb_define_alloc_func(cBarcodeItem.klass, _wrap_BarcodeItem_allocate);
   rb_define_method(cBarcodeItem.klass, "initialize", _wrap_new_BarcodeItem, -1);
@@ -3100,35 +3100,35 @@ SWIGEXPORT void Init_cgbc(void) {
   cBarcodeItem.mark = 0;
   cBarcodeItem.destroy = (void (*)(void *)) free_Barcode_Item;
   cBarcodeItem.trackObjects = 0;
-  rb_define_const(mCgbc, "BARCODE_DEFAULT_FLAGS", SWIG_From_int((int)(0x00000000)));
-  rb_define_const(mCgbc, "BARCODE_ENCODING_MASK", SWIG_From_int((int)(0x000000ff)));
-  rb_define_const(mCgbc, "BARCODE_NO_ASCII", SWIG_From_int((int)(0x00000100)));
-  rb_define_const(mCgbc, "BARCODE_NO_CHECKSUM", SWIG_From_int((int)(0x00000200)));
-  rb_define_const(mCgbc, "BARCODE_OUTPUT_MASK", SWIG_From_int((int)(0x000ff000)));
-  rb_define_const(mCgbc, "BARCODE_OUT_EPS", SWIG_From_int((int)(0x00001000)));
-  rb_define_const(mCgbc, "BARCODE_OUT_PS", SWIG_From_int((int)(0x00002000)));
-  rb_define_const(mCgbc, "BARCODE_OUT_PCL", SWIG_From_int((int)(0x00004000)));
-  rb_define_const(mCgbc, "BARCODE_OUT_PCL_III", SWIG_From_int((int)(0x0000C000)));
-  rb_define_const(mCgbc, "BARCODE_OUT_NOHEADERS", SWIG_From_int((int)(0x00100000)));
-  rb_define_const(mCgbc, "BARCODE_ANY", SWIG_From_int((int)(BARCODE_ANY)));
-  rb_define_const(mCgbc, "BARCODE_EAN", SWIG_From_int((int)(BARCODE_EAN)));
-  rb_define_const(mCgbc, "BARCODE_UPC", SWIG_From_int((int)(BARCODE_UPC)));
-  rb_define_const(mCgbc, "BARCODE_ISBN", SWIG_From_int((int)(BARCODE_ISBN)));
-  rb_define_const(mCgbc, "BARCODE_39", SWIG_From_int((int)(BARCODE_39)));
-  rb_define_const(mCgbc, "BARCODE_128", SWIG_From_int((int)(BARCODE_128)));
-  rb_define_const(mCgbc, "BARCODE_128C", SWIG_From_int((int)(BARCODE_128C)));
-  rb_define_const(mCgbc, "BARCODE_128B", SWIG_From_int((int)(BARCODE_128B)));
-  rb_define_const(mCgbc, "BARCODE_I25", SWIG_From_int((int)(BARCODE_I25)));
-  rb_define_const(mCgbc, "BARCODE_128RAW", SWIG_From_int((int)(BARCODE_128RAW)));
-  rb_define_const(mCgbc, "BARCODE_CBR", SWIG_From_int((int)(BARCODE_CBR)));
-  rb_define_const(mCgbc, "BARCODE_MSI", SWIG_From_int((int)(BARCODE_MSI)));
-  rb_define_const(mCgbc, "BARCODE_PLS", SWIG_From_int((int)(BARCODE_PLS)));
-  rb_define_const(mCgbc, "BARCODE_93", SWIG_From_int((int)(BARCODE_93)));
-  rb_define_const(mCgbc, "BARCODE_DEFAULT_MARGIN", SWIG_From_int((int)(10)));
-  rb_define_module_function(mCgbc, "barcode_create", _wrap_barcode_create, -1);
-  rb_define_module_function(mCgbc, "barcode_delete", _wrap_barcode_delete, -1);
-  rb_define_module_function(mCgbc, "barcode_encode", _wrap_barcode_encode, -1);
-  rb_define_module_function(mCgbc, "barcode_position", _wrap_barcode_position, -1);
-  rb_define_module_function(mCgbc, "barcode_version", _wrap_barcode_version, -1);
+  rb_define_const(mGbarcode, "BARCODE_DEFAULT_FLAGS", SWIG_From_int((int)(0x00000000)));
+  rb_define_const(mGbarcode, "BARCODE_ENCODING_MASK", SWIG_From_int((int)(0x000000ff)));
+  rb_define_const(mGbarcode, "BARCODE_NO_ASCII", SWIG_From_int((int)(0x00000100)));
+  rb_define_const(mGbarcode, "BARCODE_NO_CHECKSUM", SWIG_From_int((int)(0x00000200)));
+  rb_define_const(mGbarcode, "BARCODE_OUTPUT_MASK", SWIG_From_int((int)(0x000ff000)));
+  rb_define_const(mGbarcode, "BARCODE_OUT_EPS", SWIG_From_int((int)(0x00001000)));
+  rb_define_const(mGbarcode, "BARCODE_OUT_PS", SWIG_From_int((int)(0x00002000)));
+  rb_define_const(mGbarcode, "BARCODE_OUT_PCL", SWIG_From_int((int)(0x00004000)));
+  rb_define_const(mGbarcode, "BARCODE_OUT_PCL_III", SWIG_From_int((int)(0x0000C000)));
+  rb_define_const(mGbarcode, "BARCODE_OUT_NOHEADERS", SWIG_From_int((int)(0x00100000)));
+  rb_define_const(mGbarcode, "BARCODE_ANY", SWIG_From_int((int)(BARCODE_ANY)));
+  rb_define_const(mGbarcode, "BARCODE_EAN", SWIG_From_int((int)(BARCODE_EAN)));
+  rb_define_const(mGbarcode, "BARCODE_UPC", SWIG_From_int((int)(BARCODE_UPC)));
+  rb_define_const(mGbarcode, "BARCODE_ISBN", SWIG_From_int((int)(BARCODE_ISBN)));
+  rb_define_const(mGbarcode, "BARCODE_39", SWIG_From_int((int)(BARCODE_39)));
+  rb_define_const(mGbarcode, "BARCODE_128", SWIG_From_int((int)(BARCODE_128)));
+  rb_define_const(mGbarcode, "BARCODE_128C", SWIG_From_int((int)(BARCODE_128C)));
+  rb_define_const(mGbarcode, "BARCODE_128B", SWIG_From_int((int)(BARCODE_128B)));
+  rb_define_const(mGbarcode, "BARCODE_I25", SWIG_From_int((int)(BARCODE_I25)));
+  rb_define_const(mGbarcode, "BARCODE_128RAW", SWIG_From_int((int)(BARCODE_128RAW)));
+  rb_define_const(mGbarcode, "BARCODE_CBR", SWIG_From_int((int)(BARCODE_CBR)));
+  rb_define_const(mGbarcode, "BARCODE_MSI", SWIG_From_int((int)(BARCODE_MSI)));
+  rb_define_const(mGbarcode, "BARCODE_PLS", SWIG_From_int((int)(BARCODE_PLS)));
+  rb_define_const(mGbarcode, "BARCODE_93", SWIG_From_int((int)(BARCODE_93)));
+  rb_define_const(mGbarcode, "BARCODE_DEFAULT_MARGIN", SWIG_From_int((int)(10)));
+  rb_define_module_function(mGbarcode, "barcode_create", _wrap_barcode_create, -1);
+  rb_define_module_function(mGbarcode, "barcode_delete", _wrap_barcode_delete, -1);
+  rb_define_module_function(mGbarcode, "barcode_encode", _wrap_barcode_encode, -1);
+  rb_define_module_function(mGbarcode, "barcode_position", _wrap_barcode_position, -1);
+  rb_define_module_function(mGbarcode, "barcode_version", _wrap_barcode_version, -1);
 }
 
