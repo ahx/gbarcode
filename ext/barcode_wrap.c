@@ -1701,6 +1701,49 @@ SWIG_AsCharPtrAndSize(VALUE obj, char** cptr, size_t* psize, int *alloc)
 
 
 
+SWIGINTERN int
+SWIG_AsCharArray(VALUE obj, char *val, size_t size)
+{ 
+  char* cptr = 0; size_t csize = 0; int alloc = SWIG_OLDOBJ;
+  int res = SWIG_AsCharPtrAndSize(obj, &cptr, &csize, &alloc);
+  if (SWIG_IsOK(res)) {
+    if ((csize == size + 1) && cptr && !(cptr[csize-1])) --csize;
+    if (csize <= size) {
+      if (val) {
+	if (csize) memcpy(val, cptr, csize*sizeof(char));
+	if (csize < size) memset(val + csize, 0, (size - csize)*sizeof(char));
+      }
+      if (alloc == SWIG_NEWOBJ) {
+	free((char*)cptr);
+	res = SWIG_DelNewMask(res);
+      }      
+      return res;
+    }
+    if (alloc == SWIG_NEWOBJ) free((char*)cptr);
+  }
+  return SWIG_TypeError;
+}
+
+
+SWIGINTERN int
+SWIG_AsVal_char (VALUE obj, char *val)
+{    
+  int res = SWIG_AsCharArray(obj, val, 1);
+  if (!SWIG_IsOK(res)) {
+    long v;
+    res = SWIG_AddCast(SWIG_AsVal_long (obj, &v));
+    if (SWIG_IsOK(res)) {
+      if ((CHAR_MIN <= v) && (v <= CHAR_MAX)) {
+	if (val) *val = (char)(v);
+      } else {
+	res = SWIG_OverflowError;
+      }
+    }
+  }
+  return res;
+}
+
+
 SWIGINTERNINLINE VALUE 
 SWIG_FromCharPtrAndSize(const char* carray, size_t size)
 {
@@ -1715,6 +1758,13 @@ SWIG_FromCharPtrAndSize(const char* carray, size_t size)
   } else {
     return Qnil;
   }
+}
+
+
+SWIGINTERNINLINE VALUE
+SWIG_From_char  (char c) 
+{ 
+  return SWIG_FromCharPtrAndSize(&c,1);
 }
 
 
@@ -1894,6 +1944,41 @@ _wrap_barcode_svg_print(int argc, VALUE *argv, VALUE self) {
   }
   result = (int)Barcode_svg_print(arg1,arg2);
   vresult = SWIG_From_int((int)(result));
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_barcode_version(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int result;
+  char temp1 ;
+  int res1 = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  if (!(SWIG_IsOK((res1 = SWIG_ConvertPtr(argv[0],SWIG_as_voidptrptr(&arg1),SWIGTYPE_p_char,0))))) {
+    char val; 
+    int ecode = SWIG_AsVal_char(argv[0], &val);
+    if (!SWIG_IsOK(ecode)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode), "in method '" "Barcode_Version" "', argument " "1"" of type '" "char""'");
+    }
+    temp1 = (char)(val);
+    arg1 = &temp1;
+    res1 = SWIG_AddTmpMask(ecode);
+  }
+  result = (int)Barcode_Version(arg1);
+  vresult = SWIG_From_int((int)(result));
+  if (SWIG_IsTmpObj(res1)) {
+    vresult = SWIG_Ruby_AppendOutput(vresult, SWIG_From_char((*arg1)));
+  } else {
+    int new_flags = SWIG_IsNewObj(res1) ? (SWIG_POINTER_OWN |  0 ) :  0 ;
+    vresult = SWIG_Ruby_AppendOutput(vresult, SWIG_NewPointerObj((void*)(arg1), SWIGTYPE_p_char, new_flags));
+  }
   return vresult;
 fail:
   return Qnil;
@@ -2766,33 +2851,6 @@ fail:
 }
 
 
-SWIGINTERN VALUE
-_wrap_barcode_version(int argc, VALUE *argv, VALUE self) {
-  char *arg1 = (char *) 0 ;
-  int result;
-  int res1 ;
-  char *buf1 = 0 ;
-  int alloc1 = 0 ;
-  VALUE vresult = Qnil;
-  
-  if ((argc < 1) || (argc > 1)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
-  }
-  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Barcode_Version" "', argument " "1"" of type '" "char *""'");
-  }
-  arg1 = (char *)(buf1);
-  result = (int)Barcode_Version(arg1);
-  vresult = SWIG_From_int((int)(result));
-  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
-  return vresult;
-fail:
-  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
-  return Qnil;
-}
-
-
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -3066,6 +3124,7 @@ SWIGEXPORT void Init_gbarcode(void) {
   rb_define_module_function(mGbarcode, "barcode_print", _wrap_barcode_print, -1);
   rb_define_module_function(mGbarcode, "barcode_encode_and_print", _wrap_barcode_encode_and_print, -1);
   rb_define_module_function(mGbarcode, "barcode_svg_print", _wrap_barcode_svg_print, -1);
+  rb_define_module_function(mGbarcode, "barcode_version", _wrap_barcode_version, -1);
   rb_define_const(mGbarcode, "BARCODE_VERSION", SWIG_FromCharPtr("0.98"));
   rb_define_const(mGbarcode, "BARCODE_VERSION_INT", SWIG_From_int((int)(9800)));
   
@@ -3073,15 +3132,15 @@ SWIGEXPORT void Init_gbarcode(void) {
   SWIG_TypeClientData(SWIGTYPE_p_Barcode_Item, (void *) &cBarcodeItem);
   rb_define_alloc_func(cBarcodeItem.klass, _wrap_BarcodeItem_allocate);
   rb_define_method(cBarcodeItem.klass, "initialize", _wrap_new_BarcodeItem, -1);
-  rb_define_method(cBarcodeItem.klass, "flags=", _wrap_BarcodeItem_flags_set, -1);
+/*  rb_define_method(cBarcodeItem.klass, "flags=", _wrap_BarcodeItem_flags_set, -1);*/
   rb_define_method(cBarcodeItem.klass, "flags", _wrap_BarcodeItem_flags_get, -1);
   rb_define_method(cBarcodeItem.klass, "ascii=", _wrap_BarcodeItem_ascii_set, -1);
   rb_define_method(cBarcodeItem.klass, "ascii", _wrap_BarcodeItem_ascii_get, -1);
-  rb_define_method(cBarcodeItem.klass, "partial=", _wrap_BarcodeItem_partial_set, -1);
+/*  rb_define_method(cBarcodeItem.klass, "partial=", _wrap_BarcodeItem_partial_set, -1);*/
   rb_define_method(cBarcodeItem.klass, "partial", _wrap_BarcodeItem_partial_get, -1);
-  rb_define_method(cBarcodeItem.klass, "textinfo=", _wrap_BarcodeItem_textinfo_set, -1);
+/*  rb_define_method(cBarcodeItem.klass, "textinfo=", _wrap_BarcodeItem_textinfo_set, -1);*/
   rb_define_method(cBarcodeItem.klass, "textinfo", _wrap_BarcodeItem_textinfo_get, -1);
-  rb_define_method(cBarcodeItem.klass, "encoding=", _wrap_BarcodeItem_encoding_set, -1);
+/*  rb_define_method(cBarcodeItem.klass, "encoding=", _wrap_BarcodeItem_encoding_set, -1);*/
   rb_define_method(cBarcodeItem.klass, "encoding", _wrap_BarcodeItem_encoding_get, -1);
   rb_define_method(cBarcodeItem.klass, "width=", _wrap_BarcodeItem_width_set, -1);
   rb_define_method(cBarcodeItem.klass, "width", _wrap_BarcodeItem_width_get, -1);
@@ -3095,7 +3154,7 @@ SWIGEXPORT void Init_gbarcode(void) {
   rb_define_method(cBarcodeItem.klass, "margin", _wrap_BarcodeItem_margin_get, -1);
   rb_define_method(cBarcodeItem.klass, "scalef=", _wrap_BarcodeItem_scalef_set, -1);
   rb_define_method(cBarcodeItem.klass, "scalef", _wrap_BarcodeItem_scalef_get, -1);
-  rb_define_method(cBarcodeItem.klass, "error=", _wrap_BarcodeItem_error_set, -1);
+/*  rb_define_method(cBarcodeItem.klass, "error=", _wrap_BarcodeItem_error_set, -1);*/
   rb_define_method(cBarcodeItem.klass, "error", _wrap_BarcodeItem_error_get, -1);
   cBarcodeItem.mark = 0;
   cBarcodeItem.destroy = (void (*)(void *)) free_Barcode_Item;
@@ -3129,6 +3188,5 @@ SWIGEXPORT void Init_gbarcode(void) {
   rb_define_module_function(mGbarcode, "barcode_delete", _wrap_barcode_delete, -1);
   rb_define_module_function(mGbarcode, "barcode_encode", _wrap_barcode_encode, -1);
   rb_define_module_function(mGbarcode, "barcode_position", _wrap_barcode_position, -1);
-  rb_define_module_function(mGbarcode, "barcode_version", _wrap_barcode_version, -1);
 }
 

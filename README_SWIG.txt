@@ -1,5 +1,7 @@
 =SWIG Wrap of GNU Barcode
 
+* WARNING: If you edit the barcode.i file and re-wrap the C code, you will lose the docs I put in the source, as well as make some dangerous methods public! *
+
 SWIG (http://www.swig.org) was used to wrap the GNU Barcode C library 
 (http://www.gnu.org/software/barcode/barcode.html) into Ruby.
 
