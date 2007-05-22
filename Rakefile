@@ -8,8 +8,8 @@ require 'rake/rdoctask'
 
 AUTH = "Angel Pizarro"  # can also be an array of Authors
 AUTH_EMAIL = "angel@delagoya.com"
-DESC_SHORT = "A barcode library that wraps GNU Barcode using SWIG."
-DESC_LONG = DESC_SHORT + " " + "Most popular encoding schemes are supported (Code 39, UPC, ISBN, etc.). See the README for a full listing." +
+DESC_SHORT = 
+DESC_LONG = DESC_SHORT 
 " For more Ruby-ish syntax, you should use the Rbarcode gem."
 
 GEM_NAME = "gbarcode" # what ppl will type to install your gem
