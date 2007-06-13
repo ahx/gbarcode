@@ -1,0 +1,151 @@
+require 'rake'
+require 'rake/clean'
+require 'rake/gempackagetask'
+require 'rake/rdoctask'
+require 'rake/testtask'
+require 'fileutils'
+include FileUtils
+
+# shamelessly copied from _why's hpricot rakefile
+
+NAME = "gbarcode"
+REV = `svn info`[/Revision: (\d+)/, 1] rescue nil
+VERS = ENV['VERSION'] || "0.98" + (REV ? ".#{REV}" : "")
+PKG = "#{NAME}-#{VERS}"
+BIN = "*.{bundle,jar,so,obj,pdb,lib,def,exp}"
+CLEAN.include ["ext/#{BIN}", "lib/#{BIN}", 'ext/Makefile', 
+               '**/.*.sw?', '*.gem', '.config']
+RDOC_OPTS = ['--quiet', '--title', 'Gbarcode', '--main', 'README', '--inline-source']
+PKG_FILES = %w(CHANGELOG COPYING README Rakefile) +
+      Dir.glob("{bin,doc,test,lib,extras}/**/*") + 
+      Dir.glob("ext/**/*.{h,java,c,rb,rl}") 
+SPEC =
+  Gem::Specification.new do |s|
+    s.name = NAME
+    s.version = VERS
+    s.platform = Gem::Platform::RUBY
+    s.has_rdoc = true
+    s.rdoc_options += RDOC_OPTS
+    s.extra_rdoc_files = ["README", "CHANGELOG", "COPYING"]
+    s.summary = "A barcode library that wraps GNU Barcode using SWIG."
+    s.description = s.summary + " " + "Most popular encoding schemes are supported (Code 39, UPC, ISBN, etc.). See the README for a full listing." 
+    s.author = "delaGOYA"
+    s.email = 'delagoya@rubyforge.org'
+    s.homepage = 'http://gbarcode.rubyforge.org'
+    s.files = PKG_FILES
+    s.require_path = "lib"
+    s.extensions = FileList["ext/extconf.rb"]
+    s.bindir = "bin"
+  end
+
+desc "Does a full compile, test run"
+task :default => [:compile, :test]
+
+desc "Packages up Gbarcode."
+task :package
+
+desc "Releases packages for all Gbarcode packages and platforms."
+task :release => [:package, :package_win32]
+
+desc "Run all the tests"
+Rake::TestTask.new do |t|
+    t.libs << "test"
+    t.test_files = FileList['test/test_*.rb']
+    t.verbose = true
+end
+
+Rake::RDocTask.new do |rdoc|
+    rdoc.rdoc_dir = 'doc/rdoc'
+    rdoc.options += RDOC_OPTS
+    rdoc.main = "README"
+    rdoc.rdoc_files.add ['README', 'CHANGELOG', 'COPYING', 'lib/**/*.rb']
+end
+
+Rake::GemPackageTask.new(SPEC) do |p|
+    p.need_tar = true
+    p.gem_spec = SPEC
+end
+
+extension = "gbarcode"
+ext = "ext"
+ext_so = "#{ext}/#{extension}.#{Config::CONFIG['DLEXT']}"
+ext_files = FileList[
+  "#{ext}/*.c",
+  "#{ext}/*.h",
+  "#{ext}/extconf.rb",
+  "#{ext}/Makefile",
+  "lib"
+] 
+
+task "lib" do
+  directory "lib"
+end
+
+desc "Compiles the Ruby extension"
+task :compile  do
+  if Dir.glob(File.join("lib","gbarcode.*")).length == 0
+    STDERR.puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    STDERR.puts "Gem actually failed to build.  Your system is"
+    STDERR.puts "NOT configured properly to build hpricot."
+    STDERR.puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    exit(1)
+  end
+end
+
+desc "Builds just the #{extension} extension"
+task extension.to_sym => ["#{ext}/Makefile", ext_so ]
+
+file "#{ext}/Makefile" => ["#{ext}/extconf.rb"] do
+  Dir.chdir(ext) do ruby "extconf.rb" end
+end
+
+file ext_so => ext_files do
+  Dir.chdir(ext) do
+    sh(PLATFORM =~ /win32/ ? 'nmake' : 'make')
+  end
+  cp ext_so, "lib"
+end
+
+
+### Win32 Packages ###
+
+Win32Spec = SPEC.dup
+Win32Spec.platform = Gem::Platform::WIN32
+Win32Spec.files = PKG_FILES + ['lib/gbarcode.so']
+Win32Spec.extensions = []
+  
+WIN32_PKG_DIR = "#{PKG}-mswin32"
+
+desc "Package up the Win32 distribution."
+file WIN32_PKG_DIR => [:package] do
+  sh "tar zxf pkg/#{PKG}.tgz"
+  mv PKG, WIN32_PKG_DIR
+end
+
+desc "Cross-compile the hpricot_scan extension for win32"
+file "gbarcode_win32" => [WIN32_PKG_DIR] do
+  cp "extras/mingw-rbconfig.rb", "#{WIN32_PKG_DIR}/ext/rbconfig.rb"
+  sh "cd #{WIN32_PKG_DIR}/ext/ && ruby -I. extconf.rb && make"
+  mv "#{WIN32_PKG_DIR}/ext/gbarcode.so", "#{WIN32_PKG_DIR}/lib/."
+end
+
+desc "Build the binary RubyGems package for win32"
+task :package_win32 => ["gbarcode_win32"] do
+  Dir.chdir("#{WIN32_PKG_DIR}") do
+    Gem::Builder.new(Win32Spec).build
+    verbose(true) {
+      mv Dir["*.gem"].first, "../pkg/#{WIN32_PKG_DIR}.gem"
+    }
+  end
+end
+
+CLEAN.include WIN32_PKG_DIR
+
+task :install do
+  sh %{rake package}
+  sh %{sudo gem install pkg/#{NAME}-#{VERS}}
+end
+
+task :uninstall => [:clean] do
+  sh %{sudo gem uninstall #{NAME}}
+end
