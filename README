@@ -33,14 +33,16 @@ The example of the usage will illustrate this point.
 	barcode_encode(bc, BARCODE_NO_CHECKSUM | BARCODE_39)
 
 	#print out the barcode to a Postscript file, using the default width and height and page placement
-	barcode_print(bc, File.new("testout.ps", "w"), 0,0,0,0,0)
+	barcode_print(bc, File.new("testout.ps", "w"),BARCODE_OUT_PS)
+	# or
+	barcode_print(bc, File.new("testout.eps", "w"),BARCODE_OUT_EPS)
 
 	#print out the barcode to a Postscript EPS file, using the default width and height and page placement
-	barcode_print(bc, File.new("testout.eps", "w"), 0,0,0,0,BARCODE_OUT_EPS)
+	barcode_print(bc, File.new("testout.eps", "w"), BARCODE_OUT_EPS)
 
 	# you can even read the output to a stream like so
 	rd, wr = IO.pipe
-	barcode_print(bc, wr, 0,0,0,0,BARCODE_OUT_EPS)
+	barcode_print(bc, wr, BARCODE_OUT_EPS)
 	wr.close() # must close this to use the read pipe
 	myEpsBarcodeAsString = rd.readlines().join("\n")
 	rd.close()	# it is good practice to also close this pipe
