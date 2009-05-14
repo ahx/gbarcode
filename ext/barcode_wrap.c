@@ -1555,7 +1555,7 @@ static VALUE mGbarcode;
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "rubyio.h"
+#include "ruby/io.h"
 #ifdef __cplusplus
 }
 #endif
@@ -1827,7 +1827,7 @@ _wrap_barcode_print(int argc, VALUE *argv, VALUE self) {
   }
   arg1 = (struct Barcode_Item *)(argp1);
   {
-    OpenFile *of;
+    rb_io_t *of;
     GetOpenFile(argv[1], of);
     rb_io_check_writable(of);
     arg2 = GetWriteFile(of);
@@ -1879,7 +1879,7 @@ _wrap_barcode_encode_and_print(int argc, VALUE *argv, VALUE self) {
   }
   arg1 = (char *)(buf1);
   {
-    OpenFile *of;
+    rb_io_t *of;
     GetOpenFile(argv[1], of);
     rb_io_check_writable(of);
     arg2 = GetWriteFile(of);
@@ -1937,7 +1937,7 @@ _wrap_barcode_svg_print(int argc, VALUE *argv, VALUE self) {
   }
   arg1 = (struct Barcode_Item *)(argp1);
   {
-    OpenFile *of;
+    rb_io_t *of;
     GetOpenFile(argv[1], of);
     rb_io_check_writable(of);
     arg2 = GetWriteFile(of);
