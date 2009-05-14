@@ -6,29 +6,26 @@ require 'rake/packagetask'
 require 'rake/gempackagetask'
 require 'rake/rdoctask'
 
-AUTH = "Angel Pizarro"  # can also be an array of Authors
-AUTH_EMAIL = "angel@delagoya.com"
-DESC_SHORT = 
-DESC_LONG = DESC_SHORT 
-" For more Ruby-ish syntax, you should use the Rbarcode gem."
-
 GEM_NAME = "gbarcode" # what ppl will type to install your gem
 RUBYFORGE_PROJECT = "gbarcode" # The unix name for your project
 HOMEPATH = "http://#{RUBYFORGE_PROJECT}.rubyforge.org"
 REV = nil # UNCOMMENT IF REQUIRED: File.read(".svn/entries")[/committed-rev="(d+)"/, 1] rescue nil
 GEM_VERSION = "0.98"
 RDOC_OPTS = ["--exclude", "\.c$"]
+PKG = "#{GEM_NAME}-#{GEM_VERSION}"
+PKG_FILES = FileList['*.txt', 'doc/**/*.*', 'ext/**/*.c', 'ext/**/*.h', 'ext/**/*.rb']
 
-gem_spec = Gem::Specification.new do |s|
+SPEC = Gem::Specification.new do |s|
   s.name = GEM_NAME
   s.version = GEM_VERSION
-  s.summary = DESC_SHORT
-  s.description = DESC_LONG
-  s.author = AUTH
+  s.summary = "A C extension that wraps the GNU Barcode project."
+  s.description = s.summary + " For more Ruby-ish syntax, you should use the Rbarcode gem."
+  s.author = "Angel Pizarro"
+  s.email = "angel@delagoya.com"
+  s.homepage = "http://gbarcode.rubyforge.org"
   s.test_files = FileList['test/**/*']
-  s.files = FileList['*.txt', 'doc/**/*.*', 'ext/**/*.c', 'ext/**/*.h', 'ext/**/*.rb']
+  s.files = PKG_FILES
   s.require_paths = [".","ext"]
-  s.autorequire = "Gbarcode"
   s.extensions = ["ext/extconf.rb"]
   s.extra_rdoc_files = FileList['*.txt']
   s.has_rdoc = true
@@ -39,7 +36,7 @@ gem_spec = Gem::Specification.new do |s|
 end
 
 desc "package the gem"
-Rake::GemPackageTask.new(gem_spec) do |pkg|
+Rake::GemPackageTask.new(SPEC) do |pkg|
   pkg.need_zip = true
   pkg.need_tar = true
   # rm_f FileList['pkg/**/*.*']
@@ -47,7 +44,7 @@ end
 
 desc "Run test code"
 Rake::TestTask.new(:test) do |t|
-  t.libs << ["ext", "lib", "test"]
+  ["ext", "lib", "test"].each {|lib| t.libs << lib}
   t.pattern = 'test/**/*_test.rb'
   t.verbose = true
 end
@@ -72,7 +69,7 @@ end
 ### Win32 Packages ###
 
 Win32Spec = SPEC.dup
-Win32Spec.platform = Gem::Platform::WIN32
+Win32Spec.platform = 'x86-mswin32'
 Win32Spec.files = PKG_FILES + ['lib/hpricot_scan.so']
 Win32Spec.extensions = []
   
