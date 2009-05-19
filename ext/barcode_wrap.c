@@ -1830,7 +1830,7 @@ _wrap_barcode_print(int argc, VALUE *argv, VALUE self) {
     rb_io_t *of;
     GetOpenFile(argv[1], of);
     rb_io_check_writable(of);
-    arg2 = GetWriteFile(of);
+    arg2 = rb_io_stdio_file(of);
   }
   ecode3 = SWIG_AsVal_int(argv[2], &val3);
   if (!SWIG_IsOK(ecode3)) {
@@ -1882,7 +1882,7 @@ _wrap_barcode_encode_and_print(int argc, VALUE *argv, VALUE self) {
     rb_io_t *of;
     GetOpenFile(argv[1], of);
     rb_io_check_writable(of);
-    arg2 = GetWriteFile(of);
+    arg2 = rb_io_stdio_file(of);
   }
   ecode3 = SWIG_AsVal_int(argv[2], &val3);
   if (!SWIG_IsOK(ecode3)) {
@@ -1940,7 +1940,7 @@ _wrap_barcode_svg_print(int argc, VALUE *argv, VALUE self) {
     rb_io_t *of;
     GetOpenFile(argv[1], of);
     rb_io_check_writable(of);
-    arg2 = GetWriteFile(of);
+    arg2 = rb_io_stdio_file(of);
   }
   result = (int)Barcode_svg_print(arg1,arg2);
   vresult = SWIG_From_int((int)(result));
