@@ -39,10 +39,16 @@ class GbarcodeTest < Test::Unit::TestCase
     r,w = File.pipe
     Gbarcode.barcode_print(@@BC,w,0)
     w.close()
-    b = r.readlines().join("\n")
+    b = lines_without_comments r
     r.close()
-    f = File.open(File.dirname(__FILE__) + "/assets/gb-code128b.eps").readlines.join("\n")
-    assert_equal(b,f)
+    f = lines_without_comments File.open(File.dirname(__FILE__) + "/assets/gb-code128b.eps")
+    assert_equal(b, f)
   end
   
+  
+  private
+  
+  def lines_without_comments(eps_file)
+    eps_file.readlines.reject!{|l| l =~ /^%/ }
+  end
 end
