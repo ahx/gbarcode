@@ -41,7 +41,7 @@ class GbarcodeTest < Test::Unit::TestCase
     w.close()
     b = r.readlines().join("\n")
     r.close()
-    f = File.open(File.dirname(__FILE__) + "/ assets/gb-code128b.eps").readlines.join("\n")
+    f = File.open(File.dirname(__FILE__) + "/assets/gb-code128b.eps").readlines.join("\n")
     assert_equal(b,f)
   end
   
